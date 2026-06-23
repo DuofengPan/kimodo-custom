@@ -1,0 +1,15 @@
+# 质量检查阈值（可在 CLI 中覆盖）
+locomotion:
+  # 线性 locomotion 要求的最小 root 水平位移（米）
+  min_root_displacement_m: 0.5
+  # 实测速度与目标速度允许相对误差
+  speed_tolerance_ratio: 0.45
+
+foot_skate:
+  # FootSkateFromHeight 均值速度上限（m/s，越小越好）
+  max_mean_toe_velocity_mps: 0.35
+
+general:
+  min_frames: 30
+  # 是否将 QC 通过项自动移动到 approved 目录
+  move_on_pass: false

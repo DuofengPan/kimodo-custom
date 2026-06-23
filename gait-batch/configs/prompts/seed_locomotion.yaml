@@ -1,0 +1,118 @@
+# BONES-SEED 风格的 locomotion 文本模板
+# 句式参考 SEED 数据集中常见标注粒度：以 "A person..." 开头，中等细节，单行为主
+#
+# 扩展方式：新增 gait_types 条目，并在 catalog.yaml 的 jobs 中引用 gait id
+
+speed_bands:
+  slow:
+    root_speed_mps: 0.45
+    label: slow
+  medium:
+    root_speed_mps: 0.85
+    label: medium
+  fast:
+    root_speed_mps: 1.25
+    label: fast
+
+gait_types:
+  walk_forward:
+    motion:
+      type: linear
+      # Kimodo 地面平面 [x, z]，+z 为前进方向
+      direction: [0.0, 1.0]
+      use_root2d: true
+      density: sparse
+    prompts:
+      slow: "A person walks forward slowly at a steady pace."
+      medium: "A person walks forward at a casual pace."
+      fast: "A person walks forward quickly at a brisk pace."
+
+  walk_backward:
+    motion:
+      type: linear
+      direction: [0.0, -1.0]
+      use_root2d: true
+      density: sparse
+    prompts:
+      slow: "A person walks backward slowly at a steady pace."
+      medium: "A person walks backward at a casual pace."
+      fast: "A person walks backward quickly."
+
+  walk_left:
+    motion:
+      type: linear
+      direction: [-1.0, 0.0]
+      use_root2d: true
+      density: sparse
+    prompts:
+      slow: "A person sidesteps to the left slowly."
+      medium: "A person sidesteps to the left at a casual pace."
+      fast: "A person sidesteps to the left quickly."
+
+  walk_right:
+    motion:
+      type: linear
+      direction: [1.0, 0.0]
+      use_root2d: true
+      density: sparse
+    prompts:
+      slow: "A person sidesteps to the right slowly."
+      medium: "A person sidesteps to the right at a casual pace."
+      fast: "A person sidesteps to the right quickly."
+
+  jog_forward:
+    motion:
+      type: linear
+      direction: [0.0, 1.0]
+      use_root2d: true
+      density: sparse
+    prompts:
+      slow: "A person jogs forward at a relaxed pace."
+      medium: "A person jogs forward at a moderate pace."
+      fast: "A person jogs forward quickly."
+
+  run_forward:
+    motion:
+      type: linear
+      direction: [0.0, 1.0]
+      use_root2d: true
+      density: sparse
+    prompts:
+      medium: "A person runs forward at a steady pace."
+      fast: "A person runs forward quickly."
+
+  turn_left_in_place:
+    motion:
+      type: in_place
+      use_root2d: false
+    prompts:
+      slow: "A person turns to the left in place slowly."
+      medium: "A person turns to the left in place at a casual pace."
+      fast: "A person turns to the left in place quickly."
+
+  turn_right_in_place:
+    motion:
+      type: in_place
+      use_root2d: false
+    prompts:
+      slow: "A person turns to the right in place slowly."
+      medium: "A person turns to the right in place at a casual pace."
+      fast: "A person turns to the right in place quickly."
+
+  start_to_walk:
+    motion:
+      type: linear
+      direction: [0.0, 1.0]
+      use_root2d: true
+      density: sparse
+    prompts:
+      medium: "A person stands still and then starts walking forward at a casual pace."
+
+  walk_to_stop:
+    motion:
+      type: linear
+      direction: [0.0, 1.0]
+      use_root2d: true
+      density: sparse
+    prompts:
+      medium: "A person walks forward at a casual pace and then comes to a stop."

@@ -1,0 +1,48 @@
+# 步态库生成任务清单
+# 修改 jobs 即可增删类别与变体数量，无需改代码
+
+includes:
+  - prompts/seed_locomotion.yaml
+
+defaults: defaults.yaml
+
+jobs:
+  - gait: walk_forward
+    speed_bands: [slow, medium, fast]
+    num_variants: 8
+
+  - gait: walk_backward
+    speed_bands: [slow, medium, fast]
+    num_variants: 6
+
+  - gait: walk_left
+    speed_bands: [medium]
+    num_variants: 4
+
+  - gait: walk_right
+    speed_bands: [medium]
+    num_variants: 4
+
+  - gait: jog_forward
+    speed_bands: [medium, fast]
+    num_variants: 6
+
+  - gait: run_forward
+    speed_bands: [medium, fast]
+    num_variants: 4
+
+  - gait: turn_left_in_place
+    speed_bands: [slow, medium]
+    num_variants: 4
+
+  - gait: turn_right_in_place
+    speed_bands: [slow, medium]
+    num_variants: 4
+
+  - gait: start_to_walk
+    speed_bands: [medium]
+    num_variants: 4
+
+  - gait: walk_to_stop
+    speed_bands: [medium]
+    num_variants: 4

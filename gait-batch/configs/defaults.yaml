@@ -1,0 +1,24 @@
+# 全局默认生成参数（可被 catalog 中的 job / gait 覆盖）
+generation:
+  model: kimodo-soma-rp-v1.1
+  duration_sec: 6.0
+  fps: 30.0
+  diffusion_steps: 100
+  post_processing: true
+  batch_size: 4
+  seed_base: 1000
+  cfg:
+    type: separated
+    text_weight: 2.0
+    constraint_weight: 2.0
+
+export:
+  save_npz: true
+  save_bvh: true
+  bvh_standard_tpose: false
+
+output:
+  # 相对 gait-batch 根目录
+  pending_dir: outputs/pending
+  approved_dir: outputs/approved
+  rejected_dir: outputs/rejected

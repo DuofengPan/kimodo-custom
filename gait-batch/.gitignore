@@ -1,0 +1,10 @@
+# Generated motions and QC reports (keep directory structure via .gitkeep)
+outputs/pending/**
+outputs/approved/**
+outputs/rejected/**
+!outputs/**/.gitkeep
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
