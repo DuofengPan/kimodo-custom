@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any
 
 from kimodo.exports.motion_io import load_kimodo_npz
-from kimodo.model import load_model
 from kimodo.skeleton import SOMASkeleton77
 
 from gait_batch.config_loader import load_qc_config
@@ -102,7 +101,7 @@ def run_qc_on_tree(
     input_root: Path,
     *,
     qc_config_path: str | Path | None = None,
-    model_name: str = "kimodo-soma-rp-v1.1",
+    fps: float = 30.0,
     approved_root: Path | None = None,
     rejected_root: Path | None = None,
     move_on_pass: bool | None = None,
@@ -111,9 +110,7 @@ def run_qc_on_tree(
     general = qc_cfg.get("general", {})
     should_move = move_on_pass if move_on_pass is not None else bool(general.get("move_on_pass", False))
 
-    model, _ = load_model(model_name, device="cpu", return_resolved_name=True)
-    skeleton = model.output_skeleton
-    fps = float(model.fps)
+    skeleton = SOMASkeleton77()
 
     results: list[QCResult] = []
     task_dirs = sorted(p for p in input_root.rglob("*") if (p / "motion.npz").is_file())

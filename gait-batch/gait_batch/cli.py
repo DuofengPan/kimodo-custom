@@ -63,7 +63,7 @@ def cmd_qc(args: argparse.Namespace) -> int:
     results = run_qc_on_tree(
         input_root,
         qc_config_path=args.qc_config,
-        model_name=args.model,
+        fps=args.fps,
         approved_root=approved_root,
         rejected_root=rejected_root,
         move_on_pass=args.move_on_pass,
@@ -106,7 +106,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_qc = sub.add_parser("qc", help="对 pending 输出运行质量检查")
     p_qc.add_argument("--input", type=str, default="outputs/pending", help="待检目录")
     p_qc.add_argument("--qc-config", type=str, default=str(CONFIGS_DIR / "qc.yaml"))
-    p_qc.add_argument("--model", type=str, default="kimodo-soma-rp-v1.1")
+    p_qc.add_argument("--fps", type=float, default=30.0, help="Motion frame rate for metrics")
     p_qc.add_argument("--approved", type=str, default=None, help="通过后移动目标目录")
     p_qc.add_argument("--rejected", type=str, default=None, help="拒绝后移动目标目录")
     p_qc.add_argument("--move-on-pass", action="store_true", help="按 QC 结果移动目录")

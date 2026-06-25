@@ -1,0 +1,28 @@
+# 速度验证测试：前进行走 0.2 / 1.0 / 1.2 m/s，各 3 条
+includes:
+  - prompts/seed_locomotion.yaml
+
+defaults: defaults.yaml
+
+output:
+  pending_dir: outputs/test_walk_speeds
+
+speed_bands:
+  speed_0p2:
+    root_speed_mps: 0.2
+  speed_1p0:
+    root_speed_mps: 1.0
+  speed_1p2:
+    root_speed_mps: 1.2
+
+gait_types:
+  walk_forward:
+    prompts:
+      speed_0p2: "A person walks forward very slowly at a steady pace."
+      speed_1p0: "A person walks forward at a casual pace."
+      speed_1p2: "A person walks forward quickly at a brisk pace."
+
+jobs:
+  - gait: walk_forward
+    speed_bands: [speed_0p2, speed_1p0, speed_1p2]
+    num_variants: 3

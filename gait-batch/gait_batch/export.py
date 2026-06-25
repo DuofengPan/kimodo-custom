@@ -80,6 +80,7 @@ def save_task_outputs(
 def save_constraints_json(constraints: list[dict[str, Any]], out_dir: Path) -> Path | None:
     if not constraints:
         return None
+    out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / "constraints.json"
     path.write_text(json.dumps(constraints, indent=2) + "\n", encoding="utf-8")
     return path
