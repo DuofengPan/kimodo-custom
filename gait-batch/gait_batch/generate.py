@@ -128,47 +128,56 @@ def run_batch_generation(
 
     for batch_start in tqdm(range(0, len(pending), batch_size), desc="Generating batches"):
         batch = pending[batch_start : batch_start + batch_size]
-        prompts = [t.prompt for t in batch]
-        num_frames = [t.num_frames for t in batch]
-
-        batch_constraints_lst = []
-        constraints_json_by_idx: list[list[dict[str, Any]] | None] = []
+        
+        # 处理 multi-prompt 和普通情况
+        # batch 中所有任务必须是同类型（不能混合 multi/single），或者分别处理
+        # 简单处理：每个 batch 单独调用 model
+        
         for task in batch:
-            cjson = build_root2d_json(
-                task.motion_spec,
-                num_frames=task.num_frames,
-                distance_m=task.root_distance_m,
-            )
-            constraints_json_by_idx.append(cjson)
-            if cjson:
-                batch_constraints_lst.append(
-                    load_constraints_lst(cjson, model.skeleton, device=device_t)
-                )
-            else:
-                batch_constraints_lst.append([])
-
-        # Use first task seed for batch reproducibility (same as benchmark/generate_eval.py)
-        seed_everything(batch[0].seed)
-
-        try:
-            output = model(
-                prompts,
-                num_frames,
-                constraint_lst=batch_constraints_lst,
-                num_denoising_steps=int(gen_cfg.get("diffusion_steps", 100)),
-                multi_prompt=False,
-                post_processing=bool(gen_cfg.get("post_processing", True)),
-                return_numpy=True,
-                **cfg_kwargs,
-            )
-        except Exception:
-            failed += len(batch)
-            raise
-
-        for i, task in enumerate(batch):
             out_dir = resolve_path(task.output_dir)
-            sample = _crop_output(_slice_output_at(output, i), task.num_frames)
-            cjson = constraints_json_by_idx[i]
+            
+            # 处理 constraints
+            cjson = None
+            if task.is_multi_prompt:
+                # multi-prompt: 不使用 root2d constraints
+                cjson = None
+                batch_constraints_lst = []
+            else:
+                cjson = build_root2d_json(
+                    task.motion_spec,
+                    num_frames=task.num_frames if not task.is_multi_prompt else 0,
+                    distance_m=task.root_distance_m,
+                )
+                if cjson:
+                    batch_constraints_lst = [load_constraints_lst(cjson, model.skeleton, device=device_t)]
+                else:
+                    batch_constraints_lst = []
+
+            seed_everything(task.seed)
+            
+            try:
+                output = model(
+                    task.prompt if task.is_multi_prompt else [task.prompt],
+                    task.num_frames if task.is_multi_prompt else [task.num_frames],
+                    constraint_lst=batch_constraints_lst,
+                    num_denoising_steps=int(gen_cfg.get("diffusion_steps", 100)),
+                    multi_prompt=task.is_multi_prompt,
+                    num_transition_frames=int(gen_cfg.get("num_transition_frames", 5)),
+                    num_samples=1,  # 单个样本生成
+                    post_processing=bool(gen_cfg.get("post_processing", True)),
+                    return_numpy=True,
+                    **cfg_kwargs,
+                )
+            except Exception:
+                failed += 1
+                raise
+
+            # multi-prompt 输出不需要 crop，但 single 需要
+            if task.is_multi_prompt:
+                sample = _slice_output_at(output, 0)
+            else:
+                sample = _crop_output(_slice_output_at(output, 0), task.num_frames)
+                
             if cjson:
                 save_constraints_json(cjson, out_dir)
             save_task_outputs(

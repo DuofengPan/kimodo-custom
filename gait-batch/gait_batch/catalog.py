@@ -18,14 +18,15 @@ class GenerationTask:
     gait: str
     speed_band: str
     variant_index: int
-    prompt: str
-    duration_sec: float
-    num_frames: int
+    prompt: str | list[str]  # 支持 multi-prompt
+    duration_sec: float | list[float]
+    num_frames: int | list[int]
     seed: int
     root_distance_m: float | None
     target_speed_mps: float | None
     motion_spec: dict[str, Any]
     output_dir: str
+    is_multi_prompt: bool = False
 
     def to_meta(self, **extra: Any) -> dict[str, Any]:
         data = asdict(self)
@@ -78,10 +79,21 @@ def expand_catalog_jobs(
             if target_speed is not None and motion_spec.get("use_root2d", False):
                 root_distance = float(target_speed) * job_duration
 
+            # 处理 multi-prompt
+            prompt_data = prompts[band]
+            is_multi = isinstance(prompt_data, list)
+            
+            if is_multi:
+                # multi-prompt: duration 来自 motion_spec 或默认
+                durations = motion_spec.get("durations", [job_duration])
+                num_frames_list = [max(1, int(round(d * fps))) for d in durations]
+            else:
+                durations = job_duration
+                num_frames_list = max(1, int(round(job_duration * fps)))
+
             for variant_idx in range(num_variants):
                 task_id = f"{gait_id}/{band}/v{variant_idx:03d}"
                 seed = _stable_seed(seed_base, task_id)
-                num_frames = max(1, int(round(job_duration * fps)))
                 rel_out = f"{output_root}/{gait_id}/{band}/v{variant_idx:03d}"
 
                 tasks.append(
@@ -90,14 +102,15 @@ def expand_catalog_jobs(
                         gait=gait_id,
                         speed_band=band,
                         variant_index=variant_idx,
-                        prompt=prompts[band],
-                        duration_sec=job_duration,
-                        num_frames=num_frames,
+                        prompt=prompt_data,
+                        duration_sec=durations,
+                        num_frames=num_frames_list,
                         seed=seed,
                         root_distance_m=root_distance,
                         target_speed_mps=float(target_speed) if target_speed is not None else None,
                         motion_spec=motion_spec,
                         output_dir=rel_out,
+                        is_multi_prompt=is_multi,
                     )
                 )
     return tasks

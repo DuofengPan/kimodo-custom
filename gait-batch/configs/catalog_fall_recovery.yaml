@@ -1,0 +1,61 @@
+# 倒地起身动作生成配置
+# 生成 12 条，每种类型 2 条，供筛选
+
+includes:
+  - prompts/fall_recovery.yaml
+
+defaults: defaults.yaml
+
+output:
+  pending_dir: outputs/fall_recovery
+
+# 覆盖默认参数：提高质量，关闭 root2d
+generation:
+  model: kimodo-soma-rp-v1.1
+  duration_sec: 7.0  # 两段总时长，multi-prompt 会细分
+  fps: 30.0
+  diffusion_steps: 150  # 提高质量
+  post_processing: true
+  batch_size: 2
+  seed_base: 5000
+  num_transition_frames: 10  # 多段过渡帧数，倒地起身需要更平滑过渡
+  cfg:
+    type: separated
+    text_weight: 2.5  # 稍高权重确保文本对齐
+    constraint_weight: 1.5  # 无约束，降低此值
+
+export:
+  save_npz: true
+  save_bvh: true
+  bvh_standard_tpose: false
+
+jobs:
+  # 基础倒地起身
+  - gait: fall_recovery_basic
+    speed_bands: [standard]
+    num_variants: 2
+
+  # 翻滚起身
+  - gait: fall_recovery_roll
+    speed_bands: [standard]
+    num_variants: 2
+
+  # 侧身着地起身
+  - gait: fall_recovery_side
+    speed_bands: [standard]
+    num_variants: 2
+
+  # 手膝着地爬行起身
+  - gait: fall_recovery_crawl
+    speed_bands: [standard]
+    num_variants: 2
+
+  # 缓慢谨慎起身
+  - gait: fall_recovery_slow
+    speed_bands: [standard]
+    num_variants: 2
+
+  # 背部着地翻滚起身
+  - gait: fall_recovery_back_roll
+    speed_bands: [standard]
+    num_variants: 2

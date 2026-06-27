@@ -1,0 +1,75 @@
+# 倒地起身动作 - 用于机器人 fall recovery 训练
+# 策略：multi-prompt 两段式，第一段倒地姿态，第二段起身动作
+# 不使用 root2d 约束，因为起身时 root 运动复杂且不可预测
+
+speed_bands:
+  standard:
+    root_speed_mps: 0.0  # 不使用，占位
+
+gait_types:
+  fall_recovery_basic:
+    motion:
+      type: in_place  # 不使用 root2d
+      use_root2d: false
+      # 多段 prompt：第一段描述倒地状态，第二段描述起身
+      multi_prompt: true
+      durations: [3.0, 4.0]  # 第一段 3 秒（倒地保持），第二段 4 秒（起身过程）
+    prompts:
+      standard:
+        - "A person is lying face down on the ground, motionless."
+        - "A person pushes themselves up from the ground and stands up steadily."
+
+  fall_recovery_roll:
+    motion:
+      type: in_place
+      use_root2d: false
+      multi_prompt: true
+      durations: [3.0, 4.5]
+    prompts:
+      standard:
+        - "A person has fallen and is lying on their back."
+        - "A person rolls over, pushes themselves up with their hands, and stands up."
+
+  fall_recovery_side:
+    motion:
+      type: in_place
+      use_root2d: false
+      multi_prompt: true
+      durations: [2.5, 4.0]
+    prompts:
+      standard:
+        - "A person is lying on their side on the ground."
+        - "A person rises from the ground to a kneeling position, then stands up."
+
+  fall_recovery_crawl:
+    motion:
+      type: in_place
+      use_root2d: false
+      multi_prompt: true
+      durations: [3.0, 5.0]
+    prompts:
+      standard:
+        - "A person has fallen forward and is on their hands and knees."
+        - "A person crawls forward slightly, then pushes up and stands upright."
+
+  fall_recovery_slow:
+    motion:
+      type: in_place
+      use_root2d: false
+      multi_prompt: true
+      durations: [3.0, 6.0]
+    prompts:
+      standard:
+        - "A person is lying on the ground in a curled position."
+        - "A person carefully and slowly gets up from the ground, using hands for support."
+
+  fall_recovery_back_roll:
+    motion:
+      type: in_place
+      use_root2d: false
+      multi_prompt: true
+      durations: [2.0, 5.0]
+    prompts:
+      standard:
+        - "A person is lying flat on their back with arms spread."
+        - "A person rolls to their side, pushes up to hands and knees, and stands up."
